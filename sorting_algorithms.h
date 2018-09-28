@@ -1,10 +1,6 @@
 #ifndef SORTING_ALGORITHMS_H
 #define SORTING_ALGORITHMS_H
 
-#include <iostream>
-
-using namespace std;
-
 template <class T>
 class sorting_algorithms
 {
