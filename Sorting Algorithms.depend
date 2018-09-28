@@ -1,0 +1,15 @@
+# depslib dependency file v1.0
+1538147470 source:/mnt/local-disk/CodeBlocks Projects/Sorting Algorithms/main.cpp
+	<iostream>
+	"sorting_algorithms.h"
+	"sorting_algorithms.cpp"
+
+1538147532 source:/mnt/local-disk/CodeBlocks Projects/Sorting Algorithms/sorting_algorithms.cpp
+	"sorting_algorithms.h"
+
+1538147517 /mnt/local-disk/CodeBlocks Projects/Sorting Algorithms/sorting_algorithms.h
+	<iostream>
+
+1538147532 /mnt/local-disk/CodeBlocks Projects/Sorting Algorithms/sorting_algorithms.cpp
+	"sorting_algorithms.h"
+
