@@ -7,15 +7,24 @@ using namespace std;
 
 int main()
 {
-    int arrayLength = -1, arrayToSort[] = { 99, 25, 100, 300, 6, 37, 3, 9, 7 };
+    int arrayLength = -1, arrayToSort[] = { 1, 9, 6, 4, 5 };
 
     arrayLength = sizeof(arrayToSort) / sizeof(int);
 
+    cout << "unsorted-array: ";
+
+    for (int i = 0; i < arrayLength; i++)
+    {
+        cout << arrayToSort[i] << ", ";
+    }
+
+    cout << endl;
+
     sorting_algorithms<int> sortingAlgorithms(arrayLength, arrayToSort);
     // sortingAlgorithms.bubble_sort();
-    sortingAlgorithms.insertion_sort();
-
-    cout << "array: ";
+    // sortingAlgorithms.insertion_sort();
+    cout << "number of inversions: " << sortingAlgorithms.merge_sort() << endl;
+    cout << "sorted-array: ";
 
     for (int i = 0; i < arrayLength; i++)
     {
