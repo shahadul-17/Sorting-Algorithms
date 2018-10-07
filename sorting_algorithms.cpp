@@ -70,7 +70,7 @@ int sorting_algorithms<T>::merge(int startIndex, int middleIndex, int endIndex)
 
     for (int i = startIndex, j = 0, k = 0; i <= endIndex; i++)
     {
-        if (leftSubArray[j] < rightSubArray[k])
+        if (leftSubArray[j] <= rightSubArray[k])
         {
             arrayToSort[i] = leftSubArray[j];
 
@@ -79,7 +79,7 @@ int sorting_algorithms<T>::merge(int startIndex, int middleIndex, int endIndex)
         else
         {
             arrayToSort[i] = rightSubArray[k];
-            inversions += lengths[0] - j + 1;
+            inversions += lengths[0] - j;
 
             k++;
         }
@@ -102,7 +102,7 @@ int sorting_algorithms<T>::merge_sort(int startIndex, int endIndex)
         return inversions;
     }
 
-    return -1;
+    return 0;
 }
 
 template <class T>
