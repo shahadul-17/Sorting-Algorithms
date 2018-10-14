@@ -110,3 +110,60 @@ int sorting_algorithms<T>::merge_sort()
 {
     return merge_sort(0, arrayLength - 1);
 }
+
+template <class T>
+void sorting_algorithms<T>::swap(int firstIndex, int secondIndex)
+{
+    T temp = arrayToSort[firstIndex];
+    arrayToSort[firstIndex] = arrayToSort[secondIndex];
+    arrayToSort[secondIndex] = temp;
+}
+
+template <class T>
+int sorting_algorithms<T>::partition(int startIndex, int endIndex)
+{
+    int partitioningIndex = startIndex - 1, pivot = arrayToSort[endIndex];
+
+    for (int i = startIndex; i < endIndex; i++)
+    {
+        if (pivot >= arrayToSort[i])
+        {
+            partitioningIndex++;
+
+            swap(i, partitioningIndex);
+        }
+    }
+
+    partitioningIndex++;
+
+    swap(partitioningIndex, endIndex);
+
+    return partitioningIndex;
+}
+
+template <class T>
+void sorting_algorithms<T>::quick_sort(bool randomize, int startIndex, int endIndex)
+{
+    if (startIndex < endIndex)
+    {
+        int partitioningIndex = -1;
+
+        if (randomize)      // if randomize is true, it will generate a random index (pivot) and swap it with the last index...
+        {
+            srand(time(NULL));
+
+            swap(startIndex + (rand() % (endIndex - startIndex)), endIndex);
+        }
+
+        partitioningIndex = partition(startIndex, endIndex);
+
+        quick_sort(randomize, startIndex, partitioningIndex - 1);
+        quick_sort(randomize, partitioningIndex + 1, endIndex);
+    }
+}
+
+template <class T>
+void sorting_algorithms<T>::quick_sort(bool randomize)
+{
+    return quick_sort(randomize, 0, arrayLength - 1);
+}

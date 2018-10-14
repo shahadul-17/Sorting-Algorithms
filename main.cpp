@@ -7,7 +7,7 @@ using namespace std;
 
 int main()
 {
-    int arrayLength = -1, arrayToSort[] = { 1, 9, 6, 4, 5 };
+    int arrayLength = -1, arrayToSort[] = { 1, 1, 9, 3, 6, 6, 4, 1, 5, 3 };
 
     arrayLength = sizeof(arrayToSort) / sizeof(int);
 
@@ -23,7 +23,9 @@ int main()
     sorting_algorithms<int> sortingAlgorithms(arrayLength, arrayToSort);
     // sortingAlgorithms.bubble_sort();
     // sortingAlgorithms.insertion_sort();
-    cout << "number of inversions: " << sortingAlgorithms.merge_sort() << endl;
+    // cout << "number of inversions: " << sortingAlgorithms.merge_sort() << endl;
+    sortingAlgorithms.quick_sort(true);
+
     cout << "sorted-array: ";
 
     for (int i = 0; i < arrayLength; i++)
