@@ -106,9 +106,77 @@ int sorting_algorithms<Type>::merge_sort(int startIndex, int endIndex)
 }
 
 template <class Type>
-int sorting_algorithms<Type>::merge_sort()
+int sorting_algorithms<Type>::multithreaded_merge_sort(ThreadParameter *threadParameter)
 {
-    return merge_sort(0, arrayLength - 1);
+    if ((*threadParameter).numberOfThreads < 2)
+    {
+        return merge_sort((*threadParameter).startIndex, (*threadParameter).endIndex);
+    }
+    else if ((*threadParameter).startIndex < (*threadParameter).endIndex)
+    {
+        int i = 0, inversions = 0, middleIndex = ((*threadParameter).startIndex + (*threadParameter).endIndex) / 2;
+
+        ThreadParameter *threadParameters = new ThreadParameter[2];
+
+        for (i = 0; i < 2; i++)
+        {
+            threadParameters[i].flag = (*threadParameter).flag;
+            threadParameters[i].inversions = 0;
+            threadParameters[i].numberOfThreads = (*threadParameter).numberOfThreads / 2;
+            threadParameters[i].sortingAlgorithms = this;
+        }
+
+        threadParameters[0].startIndex = (*threadParameter).startIndex;
+        threadParameters[0].endIndex = middleIndex;
+        threadParameters[1].startIndex = middleIndex + 1;
+        threadParameters[1].endIndex = (*threadParameter).endIndex;
+
+        pthread_t *threads = new pthread_t[2];
+
+        for (i = 0; i < 2; i++)
+        {
+            pthread_create(&threads[i], NULL, member_function_wrapper, (void *)(&threadParameters[i]));
+        }
+
+        for (i = 0; i < 2; i++)     // waiting for both threads to finish...
+        {
+            pthread_join(threads[i], NULL);
+        }
+
+        for (i = 0; i < 2; i++)     // counting inversions...
+        {
+            inversions += threadParameters[i].inversions;
+        }
+
+        inversions += merge((*threadParameter).startIndex, middleIndex, (*threadParameter).endIndex);       // counting inversions...
+
+        delete [] threads;
+        delete [] threadParameters;
+
+        return inversions;
+    }
+
+    return 0;
+}
+
+template <class Type>
+int sorting_algorithms<Type>::merge_sort(bool multithreaded)
+{
+    if (multithreaded)
+    {
+        ThreadParameter threadParameter;
+        threadParameter.flag = 0;       // flag == 0 for multithreaded merge sort...
+        // threadParameter.inversions = 0; don't need to assign zero as this remains ununsed...
+        threadParameter.numberOfThreads = 8;        // number of threads could be changed...
+        threadParameter.startIndex = 0;
+        threadParameter.endIndex = arrayLength - 1;
+
+        return multithreaded_merge_sort(&threadParameter);
+    }
+    else
+    {
+        return merge_sort(0, arrayLength - 1);
+    }
 }
 
 template <class Type>
@@ -219,12 +287,12 @@ void sorting_algorithms<Type>::quick_sort(bool randomize, bool multithreaded)
     {
         ThreadParameter threadParameter;
         threadParameter.randomize = randomize;
-        threadParameter.flag = 1;       // flag == 1 for multithreaded quicksort...
+        threadParameter.flag = 1;       // flag == 1 for multithreaded quick sort...
         threadParameter.numberOfThreads = 8;        // number of threads could be changed...
         threadParameter.startIndex = 0;
         threadParameter.endIndex = arrayLength - 1;
 
-        member_function_wrapper((void *)(&threadParameter));
+        multithreaded_quick_sort(&threadParameter);
     }
     else
     {
@@ -240,6 +308,8 @@ void * sorting_algorithms<Type>::member_function_wrapper(void *argument)
     switch ((*threadParameter).flag)
     {
     case 0:
+        (*threadParameter).inversions += ((*threadParameter).sortingAlgorithms)->multithreaded_merge_sort(threadParameter);
+
         break;
     case 1:
         ((*threadParameter).sortingAlgorithms)->multithreaded_quick_sort(threadParameter);

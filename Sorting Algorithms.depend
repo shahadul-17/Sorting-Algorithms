@@ -26,22 +26,22 @@
 1538160391 source:/mnt/local-disk/GitHub Repositories/Sorting-Algorithms/sorting_algorithms.cpp
 	"sorting_algorithms.h"
 
-1540312965 source:d:\documents\github repositories\sorting-algorithms\main.cpp
+1540321758 source:d:\documents\github repositories\sorting-algorithms\main.cpp
 	<iostream>
 	"sorting_algorithms.h"
 	"sorting_algorithms.cpp"
 
-1540313100 d:\documents\github repositories\sorting-algorithms\sorting_algorithms.h
+1540321973 d:\documents\github repositories\sorting-algorithms\sorting_algorithms.h
 	<cstdlib>
 	<cstring>
 	<cmath>
 	<ctime>
 	<pthread.h>
 
-1540312922 d:\documents\github repositories\sorting-algorithms\sorting_algorithms.cpp
+1540322115 d:\documents\github repositories\sorting-algorithms\sorting_algorithms.cpp
 	"sorting_algorithms.h"
 
-1540312922 source:d:\documents\github repositories\sorting-algorithms\sorting_algorithms.cpp
+1540322115 source:d:\documents\github repositories\sorting-algorithms\sorting_algorithms.cpp
 	"sorting_algorithms.h"
 
 1540307271 d:\documents\github repositories\sorting-algorithms\thread_wrapper.h
