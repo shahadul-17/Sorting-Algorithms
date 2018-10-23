@@ -1,12 +1,12 @@
 #include "sorting_algorithms.h"
 
-template <class T>
-sorting_algorithms<T>::sorting_algorithms(int arrayLength, T *arrayToSort)
+template <class Type>
+sorting_algorithms<Type>::sorting_algorithms(int arrayLength, Type *arrayToSort)
 {
     this->arrayLength = arrayLength;
     this->arrayToSort = arrayToSort;
 
-    maximumValue = (T)pow(2.0, (double)((sizeof(T) * BYTE) - 1)) + 1;
+    maximumValue = (Type)pow(2.0, (double)((sizeof(Type) * BYTE) - 1)) + 1;
 
     if (maximumValue < 0)
     {
@@ -14,14 +14,14 @@ sorting_algorithms<T>::sorting_algorithms(int arrayLength, T *arrayToSort)
     }
 }
 
-template <class T>
-sorting_algorithms<T>::~sorting_algorithms()
+template <class Type>
+sorting_algorithms<Type>::~sorting_algorithms()
 {
     arrayToSort = 0;
 }
 
-template <class T>
-void sorting_algorithms<T>::bubble_sort()
+template <class Type>
+void sorting_algorithms<Type>::bubble_sort()
 {
     int temp = 0;
 
@@ -39,8 +39,8 @@ void sorting_algorithms<T>::bubble_sort()
     }
 }
 
-template <class T>
-void sorting_algorithms<T>::insertion_sort()
+template <class Type>
+void sorting_algorithms<Type>::insertion_sort()
 {
     for (int i = 1; i < arrayLength; i++)
     {
@@ -57,16 +57,16 @@ void sorting_algorithms<T>::insertion_sort()
     }
 }
 
-template <class T>
-int sorting_algorithms<T>::merge(int startIndex, int middleIndex, int endIndex)
+template <class Type>
+int sorting_algorithms<Type>::merge(int startIndex, int middleIndex, int endIndex)
 {
     int inversions = 0, lengths[] = { middleIndex - startIndex + 1, endIndex - middleIndex };
-    T leftSubArray[lengths[0] + 1], rightSubArray[lengths[1] + 1];
+    Type leftSubArray[lengths[0] + 1], rightSubArray[lengths[1] + 1];
 
     leftSubArray[lengths[0]] = rightSubArray[lengths[1]] = maximumValue;
 
-    memcpy(leftSubArray, arrayToSort + startIndex, lengths[0] * sizeof(T));
-    memcpy(rightSubArray, arrayToSort + middleIndex + 1, lengths[1] * sizeof(T));
+    memcpy(leftSubArray, arrayToSort + startIndex, lengths[0] * sizeof(Type));
+    memcpy(rightSubArray, arrayToSort + middleIndex + 1, lengths[1] * sizeof(Type));
 
     for (int i = startIndex, j = 0, k = 0; i <= endIndex; i++)
     {
@@ -88,8 +88,8 @@ int sorting_algorithms<T>::merge(int startIndex, int middleIndex, int endIndex)
     return inversions;
 }
 
-template <class T>
-int sorting_algorithms<T>::merge_sort(int startIndex, int endIndex)
+template <class Type>
+int sorting_algorithms<Type>::merge_sort(int startIndex, int endIndex)
 {
     if (startIndex < endIndex)
     {
@@ -105,22 +105,22 @@ int sorting_algorithms<T>::merge_sort(int startIndex, int endIndex)
     return 0;
 }
 
-template <class T>
-int sorting_algorithms<T>::merge_sort()
+template <class Type>
+int sorting_algorithms<Type>::merge_sort()
 {
     return merge_sort(0, arrayLength - 1);
 }
 
-template <class T>
-void sorting_algorithms<T>::swap(int firstIndex, int secondIndex)
+template <class Type>
+void sorting_algorithms<Type>::swap(int firstIndex, int secondIndex)
 {
-    T temp = arrayToSort[firstIndex];
+    Type temp = arrayToSort[firstIndex];
     arrayToSort[firstIndex] = arrayToSort[secondIndex];
     arrayToSort[secondIndex] = temp;
 }
 
-template <class T>
-int sorting_algorithms<T>::partition(int startIndex, int endIndex)
+template <class Type>
+int sorting_algorithms<Type>::partition(int startIndex, int endIndex)
 {
     int partitioningIndex = startIndex - 1, pivot = arrayToSort[endIndex];
 
@@ -141,8 +141,8 @@ int sorting_algorithms<T>::partition(int startIndex, int endIndex)
     return partitioningIndex;
 }
 
-template <class T>
-void sorting_algorithms<T>::quick_sort(bool randomize, int startIndex, int endIndex)
+template <class Type>
+void sorting_algorithms<Type>::quick_sort(bool randomize, int startIndex, int endIndex)
 {
     if (startIndex < endIndex)
     {
@@ -162,8 +162,90 @@ void sorting_algorithms<T>::quick_sort(bool randomize, int startIndex, int endIn
     }
 }
 
-template <class T>
-void sorting_algorithms<T>::quick_sort(bool randomize)
+template <class Type>
+void sorting_algorithms<Type>::multithreaded_quick_sort(ThreadParameter *threadParameter)
 {
-    return quick_sort(randomize, 0, arrayLength - 1);
+    if ((*threadParameter).numberOfThreads < 2)
+    {
+        quick_sort((*threadParameter).randomize, (*threadParameter).startIndex, (*threadParameter).endIndex);
+    }
+    else if ((*threadParameter).startIndex < (*threadParameter).endIndex)
+    {
+        if ((*threadParameter).randomize)      // if randomize is true, it will generate a random index (pivot) and swap it with the last index...
+        {
+            srand(time(NULL));
+
+            swap((*threadParameter).startIndex + (rand() % ((*threadParameter).endIndex - (*threadParameter).startIndex)), (*threadParameter).endIndex);
+        }
+
+        int i = 0, partitioningIndex = partition((*threadParameter).startIndex, (*threadParameter).endIndex);
+
+        ThreadParameter *threadParameters = new ThreadParameter[2];
+
+        for (i = 0; i < 2; i++)
+        {
+            threadParameters[i].randomize = (*threadParameter).randomize;
+            threadParameters[i].flag = (*threadParameter).flag;
+            threadParameters[i].numberOfThreads = (*threadParameter).numberOfThreads / 2;
+            threadParameters[i].sortingAlgorithms = this;
+        }
+
+        threadParameters[0].startIndex = (*threadParameter).startIndex;
+        threadParameters[0].endIndex = partitioningIndex - 1;
+        threadParameters[1].startIndex = partitioningIndex + 1;
+        threadParameters[1].endIndex = (*threadParameter).endIndex;
+
+        pthread_t *threads = new pthread_t[2];
+
+        for (i = 0; i < 2; i++)
+        {
+            pthread_create(&threads[i], NULL, member_function_wrapper, (void *)(&threadParameters[i]));
+        }
+
+        for (i = 0; i < 2; i++)     // waiting for both threads to finish...
+        {
+            pthread_join(threads[i], NULL);
+        }
+
+        delete [] threads;
+        delete [] threadParameters;
+    }
+}
+
+template <class Type>
+void sorting_algorithms<Type>::quick_sort(bool randomize, bool multithreaded)
+{
+    if (multithreaded)
+    {
+        ThreadParameter threadParameter;
+        threadParameter.randomize = randomize;
+        threadParameter.flag = 1;       // flag == 1 for multithreaded quicksort...
+        threadParameter.numberOfThreads = 8;        // number of threads could be changed...
+        threadParameter.startIndex = 0;
+        threadParameter.endIndex = arrayLength - 1;
+
+        member_function_wrapper((void *)(&threadParameter));
+    }
+    else
+    {
+        quick_sort(randomize, 0, arrayLength - 1);
+    }
+}
+
+template <class Type>
+void * sorting_algorithms<Type>::member_function_wrapper(void *argument)
+{
+    ThreadParameter *threadParameter = (ThreadParameter *)argument;
+
+    switch ((*threadParameter).flag)
+    {
+    case 0:
+        break;
+    case 1:
+        ((*threadParameter).sortingAlgorithms)->multithreaded_quick_sort(threadParameter);
+
+        break;
+    }
+
+    return NULL;
 }

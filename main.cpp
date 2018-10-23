@@ -24,7 +24,8 @@ int main()
     // sortingAlgorithms.bubble_sort();
     // sortingAlgorithms.insertion_sort();
     // cout << "number of inversions: " << sortingAlgorithms.merge_sort() << endl;
-    sortingAlgorithms.quick_sort(true);
+    // sortingAlgorithms.quick_sort(true);
+    sortingAlgorithms.quick_sort(true, true);       // randomized = true, multithreaded = true...
 
     cout << "sorted-array: ";
 
